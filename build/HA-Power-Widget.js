@@ -19,7 +19,7 @@ dateFormatter.useShortTimeStyle();
 const SCRIPT_NAME = 'power-stat';
 let chartDT;
 const sensorData = {};
-const Sensors = ["sensor.energy_consumption_today", "sensor.power_consumption", "sensor.inverter_grid_power"];
+const Sensors = ["sensor.energy_consumption_today", "sensor.power_consumption", "sensor.inverter_grid_power", "sensor.inverter_warning_code"];
 async function processData() {
   // Ensure sensorData is populated before proceeding
   await Promise.all(Sensors.map(async sensor => {

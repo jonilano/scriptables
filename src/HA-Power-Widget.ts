@@ -18,7 +18,8 @@ const sensorData: { [key: string]: string | undefined } = {};
 const Sensors = [
   "sensor.energy_consumption_today",
   "sensor.power_consumption",
-  "sensor.inverter_grid_power"
+  "sensor.inverter_grid_power",
+  "sensor.inverter_warning_code",
 ];
 
 async function processData() {
