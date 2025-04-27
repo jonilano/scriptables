@@ -1,4 +1,4 @@
-import { fetchEntityState, fetchEntityStateHistory } from "./lib/home-assistant";
+import { fetchEntityState, fetchEntityStateHistory, adjustDateFrom } from "./lib/home-assistant";
 import { generateChartData } from "./lib/chart-data";
 // @ts-expect-error ignore
 import Logger from "./lib/Logger.js";
@@ -36,7 +36,9 @@ async function processData() {
   logger.log("Sensor Data:");
   logger.log(sensorData);
 
-  const entityStateHistory = await fetchEntityStateHistory("sensor.power_consumption")
+  const startTime = adjustDateFrom(new Date());
+  const entityStateHistory = await fetchEntityStateHistory("sensor.power_consumption", startTime);
+
   logger.log("Stat history:");
   logger.log(entityStateHistory);
 

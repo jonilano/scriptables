@@ -2,6 +2,7 @@
 import type { EntityState, EntityStateHistory } from './home-assistant.types';
 
 export function generateChartData(data: EntityStateHistory): number[] {
+  
   const relevantData: EntityState[] = data[0].filter(entry => {
     const timestamp = new Date(entry.last_changed).getTime();
     return Date.now() - timestamp <= 7_300_000; // Two hours

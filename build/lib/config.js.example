@@ -5,4 +5,16 @@ const ha = {
   token = "your super secret api access token";
 };
 
-module.exports = { ha }
+const timeoutInterval = {
+  internal: 6, // Timeout for internal URL
+  external: 3, // Timeout for external URL
+};
+
+const timestampOffset = {
+  days: 0,
+  hours: 2,
+  minutes: 0,
+  seconds: 0
+}
+
+module.exports = { ha, timeoutInterval, timestampOffset }

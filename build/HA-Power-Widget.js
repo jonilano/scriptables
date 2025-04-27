@@ -2,7 +2,8 @@
 
 const {
   fetchEntityState,
-  fetchEntityStateHistory
+  fetchEntityStateHistory,
+  adjustDateFrom
 } = importModule("./lib/home-assistant");
 const {
   generateChartData
@@ -32,7 +33,8 @@ async function processData() {
   }));
   logger.log("Sensor Data:");
   logger.log(sensorData);
-  const entityStateHistory = await fetchEntityStateHistory("sensor.power_consumption");
+  const startTime = adjustDateFrom(new Date());
+  const entityStateHistory = await fetchEntityStateHistory("sensor.power_consumption", startTime);
   logger.log("Stat history:");
   logger.log(entityStateHistory);
   chartDT = generateChartData(entityStateHistory);
