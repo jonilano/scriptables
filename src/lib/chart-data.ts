@@ -1,14 +1,8 @@
 // based on https://github.com/lollokara/HA-Tiny-Graphs
+import type { EntityState, EntityStateHistory } from './home-assistant.types';
 
-interface HistoryEntry {
-  last_changed: string;
-  state: string | null;
-}
-
-type HistoryData = HistoryEntry[][];
-
-export function generateChartData(data: HistoryData): number[] {
-  const relevantData: HistoryEntry[] = data[0].filter(entry => {
+export function generateChartData(data: EntityStateHistory): number[] {
+  const relevantData: EntityState[] = data[0].filter(entry => {
     const timestamp = new Date(entry.last_changed).getTime();
     return Date.now() - timestamp <= 7_300_000; // Two hours
   });

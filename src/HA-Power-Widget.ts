@@ -1,4 +1,4 @@
-import { fetchAllStates, fetchHistory } from "./lib/home-assistant";
+import { fetchEntityState, fetchEntityStateHistory } from "./lib/home-assistant";
 import { generateChartData } from "./lib/chart-data";
 // @ts-expect-error ignore
 import Logger from "./lib/Logger.js";
@@ -25,18 +25,22 @@ const Sensors = [
 async function processData() {
   // Ensure sensorData is populated before proceeding
   await Promise.all(Sensors.map(async (sensor) => {
-    const state = await fetchAllStates(sensor);
-    sensorData[sensor] = state;
+    const entityState = await fetchEntityState(sensor);
+    if ("message" in entityState) {
+      sensorData[sensor] = entityState.message;
+    } else {
+      sensorData[sensor] = entityState.state;
+    }
   }));
 
   logger.log("Sensor Data:");
   logger.log(sensorData);
 
-  const history = await fetchHistory("sensor.power_consumption")
+  const entityStateHistory = await fetchEntityStateHistory("sensor.power_consumption")
   logger.log("Stat history:");
-  logger.log(history);
+  logger.log(entityStateHistory);
 
-  chartDT = generateChartData(history);
+  chartDT = generateChartData(entityStateHistory);
   logger.exportLogs(false, undefined, true); 
 
   return exec();

@@ -3,13 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fetchAllStates = fetchAllStates;
-exports.fetchHistory = fetchHistory;
+exports.fetchEntityState = fetchEntityState;
+exports.fetchEntityStateHistory = fetchEntityStateHistory;
 // based on https://github.com/lollokara/HA-Tiny-Graphs
 const {
   ha
 } = importModule("./config.js"); // Define global Request type for compatibility (e.g., in Scriptable or custom env)
-async function fetchAllStates(entityID) {
+async function fetchEntityState(entityID) {
   try {
     const req = new Request(`${ha.internalUrl}/api/states/${entityID}`);
     req.timeoutInterval = 6;
@@ -17,8 +17,7 @@ async function fetchAllStates(entityID) {
       "Authorization": `Bearer ${ha.token}`,
       "content-type": "application/json"
     };
-    const data = await req.loadJSON();
-    return data.state;
+    return await req.loadJSON();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_) {
     const req = new Request(`${ha.externalUrl}/api/states/${entityID}`);
@@ -27,11 +26,10 @@ async function fetchAllStates(entityID) {
       "Authorization": `Bearer ${ha.token}`,
       "content-type": "application/json"
     };
-    const data = await req.loadJSON();
-    return data.state;
+    return await req.loadJSON();
   }
 }
-async function fetchHistory(entityID) {
+async function fetchEntityStateHistory(entityID) {
   const now = new Date();
   now.setHours(now.getHours() - 2);
   const ts = now.toISOString();

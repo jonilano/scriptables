@@ -1,8 +1,8 @@
 "use strict";
 
 const {
-  fetchAllStates,
-  fetchHistory
+  fetchEntityState,
+  fetchEntityStateHistory
 } = importModule("./lib/home-assistant");
 const {
   generateChartData
@@ -23,15 +23,19 @@ const Sensors = ["sensor.energy_consumption_today", "sensor.power_consumption", 
 async function processData() {
   // Ensure sensorData is populated before proceeding
   await Promise.all(Sensors.map(async sensor => {
-    const state = await fetchAllStates(sensor);
-    sensorData[sensor] = state;
+    const entityState = await fetchEntityState(sensor);
+    if ("message" in entityState) {
+      sensorData[sensor] = entityState.message;
+    } else {
+      sensorData[sensor] = entityState.state;
+    }
   }));
   logger.log("Sensor Data:");
   logger.log(sensorData);
-  const history = await fetchHistory("sensor.power_consumption");
+  const entityStateHistory = await fetchEntityStateHistory("sensor.power_consumption");
   logger.log("Stat history:");
-  logger.log(history);
-  chartDT = generateChartData(history);
+  logger.log(entityStateHistory);
+  chartDT = generateChartData(entityStateHistory);
   logger.exportLogs(false, undefined, true);
   return exec();
 }
