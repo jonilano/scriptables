@@ -1,0 +1,8 @@
+// rename this to config.js
+const ha = {
+  internalUrl = "http://homeassistant.local:8123";  // internal
+  externalUrl = "http://your_external_ip:8123";         // external
+  token = "your super secret api access token";
+};
+
+module.exports = { ha }

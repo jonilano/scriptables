@@ -1,0 +1,43 @@
+# Logs
+log
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+node_modules/
+
+# MAC
+.DS_Store
+
+# VScode
+.vscode
+jsconfig.json
+
+# automation tests
+allure-results
+
+# Yarn lock file
+yarn.lock
+
+#IntelliJ *.orig files
+*.orig
+
+# Vim
+.vim/
+*.vim
+
+# releases
+*.zip
+
+# private config
+src/lib/config.ts
+build/lib/config.js
+
+# scrap files
+src/HA-Power-Widget-Mac.ts
+src/lib/tiny-dashboard-on-mac.js
+build/HA-Power-Widget-Mac.js
+build/lib/tiny-dashboard-on-mac.js
