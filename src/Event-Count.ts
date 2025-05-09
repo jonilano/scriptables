@@ -3,14 +3,14 @@
 // icon-color: green; icon-glyph: magic;
 //Shoutout to riverwolf for sharing the code to fetch remaining events for the day. https://talk.automators.fm/t/calendar-reminders/9236
 
-var widget = new ListWidget();
+const widget = new ListWidget();
 const NOW = new Date();
 
 // Find today's events that are part of the calendar list
 // Change this to your calendars
 const VISIBLE_CALENDARS = [
     "Work",
-    "Home",
+    "Family",
 ];
 
 // const reminderCalendars = await Calendar.forReminders();
@@ -28,18 +28,18 @@ for (const event of events) {
     }
 }
 
-let calsymbol = SFSymbol.named("calendar");
+const calsymbol = SFSymbol.named("calendar");
 
-var imagestack = widget.addStack();
+const imagestack = widget.addStack();
 imagestack.setPadding(5, 5, 5, 5);
 imagestack.addSpacer();
-let calimage = imagestack.addImage(calsymbol.image);
+const calimage = imagestack.addImage(calsymbol.image);
 calimage.resizable = false;
 calimage.tintColor = Color.white();
 calimage.centerAlignImage();
 imagestack.addSpacer();
 
-var counterstack = widget.addStack();
+const counterstack = widget.addStack();
 counterstack.setPadding(5, 5, 5, 5);
 counterstack.addSpacer();
 counterstack.addText(String(itemsToShow.length)).font =
@@ -50,3 +50,6 @@ widget.url = "calshow://";
 
 if (config.runsInApp) widget.presentMedium();
 else if (config.runsInWidget) Script.setWidget(widget);
+
+export { };
+
