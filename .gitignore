@@ -38,6 +38,6 @@ build/lib/config.js
 
 # scrap files
 src/HA-Power-Widget-Mac.ts
-src/lib/tiny-dashboard-on-mac.js
+src/lib/tiny-dashboard-mac.ts
 build/HA-Power-Widget-Mac.js
-build/lib/tiny-dashboard-on-mac.js
+build/lib/tiny-dashboard-mac.js

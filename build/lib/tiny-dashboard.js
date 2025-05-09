@@ -137,7 +137,10 @@ function createWidget(args, theme) {
     subtitle2,
     headerSymbol: headerSymbolProp,
     header,
-    subValue
+    subValue,
+    pvSymbol,
+    acSymbol,
+    batterySymbol
   } = args;
   const appearence = getDeviceAppearance();
   const palette = getPalette(theme);
@@ -190,6 +193,24 @@ function createWidget(args, theme) {
     subValueText.minimumScaleFactor = 0.50;
   }
 
+  // SOURCE ICONS
+  const sourceStack = listWidget.addStack();
+  sourceStack.layoutHorizontally();
+  sourceStack.setPadding(0, GAP, 0, 0);
+  const pvSymbolImg = sourceStack.addImage(pvSymbol.image);
+  pvSymbolImg.resizable = true;
+  pvSymbolImg.tintColor = textColor;
+  pvSymbolImg.imageSize = new Size(18, 18);
+  const acSymbolImg = sourceStack.addImage(acSymbol.image);
+  acSymbolImg.resizable = true;
+  acSymbolImg.tintColor = textColor;
+  acSymbolImg.imageSize = new Size(18, 18);
+  const batterySymbolImg = sourceStack.addImage(batterySymbol.image);
+  batterySymbolImg.resizable = true;
+  batterySymbolImg.tintColor = textColor;
+  batterySymbolImg.imageSize = new Size(18, 18);
+  // listWidget.addSpacer();
+
   // FOOTER
   const footerStack = listWidget.addStack();
   const footerStackBottomPadding = (2 - [subtitle1, subtitle2].reduce((acc, item) => acc + (item ? 1 : 0), 0)) * GAP;
@@ -197,16 +218,20 @@ function createWidget(args, theme) {
   footerStack.layoutVertically();
   footerStack.spacing = 2;
   if (subtitle1) {
-    const subtitle1Text = footerStack.addText(subtitle1);
+    const subtitle1Text = footerStack.addText(subtitle1 + " TODAY " + subtitle2);
     subtitle1Text.textColor = textColor;
     subtitle1Text.font = Font.lightSystemFont(TYPOGRAPHY.caption);
   }
-  if (subtitle2) {
-    const subtitle2Text = footerStack.addText(subtitle2);
-    subtitle2Text.textColor = textColor;
-    subtitle2Text.font = Font.lightSystemFont(TYPOGRAPHY.caption);
-  }
-  listWidget.addSpacer(GAP / 2);
+
+  // if (subtitle2) {
+  //     const subtitle2Text = footerStack.addText(subtitle2)
+  //
+  //     subtitle2Text.textColor = textColor
+  //     subtitle2Text.font = Font.lightSystemFont(TYPOGRAPHY.caption)
+  // }
+
+  // listWidget.addSpacer(GAP / 2)
+  listWidget.addSpacer(3);
 
   // GRAPH
   const graphStack = listWidget.addStack();

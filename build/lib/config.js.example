@@ -1,13 +1,13 @@
 // rename this to config.js
 const ha = {
-  internalUrl = "http://homeassistant.local:8123";  // internal
-  externalUrl = "http://your_external_ip:8123";         // external
+  internalUrl = "http://homeassistant.local:8123";
+  externalUrl = "http://your_external_ip:8123";
   token = "your super secret api access token";
 };
 
 const timeoutInterval = {
-  internal: 6, // Timeout for internal URL
-  external: 3, // Timeout for external URL
+  internal: 6,
+  external: 3,
 };
 
 const timestampOffset = {
