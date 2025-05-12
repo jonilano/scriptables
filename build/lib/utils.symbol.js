@@ -32,10 +32,10 @@ function createSourceSymbol({
       break;
     case "Battery":
       symbolName = "batteryblock";
-      symbolName += isSupplying || chargeLevel === 100 ? ".fill" : "";
+      symbolName += isSupplying ? ".fill" : "";
       if (isCharging) {
         symbolName = "bolt." + symbolName;
-        symbolName += chargeLevel === 100 ? ".fill" : "";
+        symbolName = chargeLevel === 100 ? symbolName + ".fill" : symbolName;
       }
       break;
     default:

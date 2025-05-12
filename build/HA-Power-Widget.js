@@ -1,13 +1,13 @@
 "use strict";
 
 const {
-  SourceName,
-  createSourceSymbol
+  createSourceSymbol,
+  SourceName
 } = importModule("./lib/utils.symbol");
 const {
+  adjustDateFrom,
   fetchEntityState,
-  fetchEntityStateHistory,
-  adjustDateFrom
+  fetchEntityStateHistory
 } = importModule("./lib/home-assistant");
 const {
   generateChartData
@@ -19,12 +19,9 @@ const {
 const logger = new Logger();
 const dateFormatter = new DateFormatter();
 dateFormatter.useShortTimeStyle();
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const SCRIPT_NAME = 'power-stat';
 let chartDT;
 const sensorData = {};
-const Sensors = ["sensor.energy_consumption_today", "sensor.power_consumption", "sensor.inverter_grid_power", "sensor.inverter_pv_power", "sensor.inverter_battery_power", "sensor.inverter_warning_code"];
+const Sensors = ["sensor.energy_consumption_today", "sensor.power_consumption", "sensor.inverter_grid_power", "sensor.inverter_pv_power", "sensor.inverter_battery_power", "sensor.inverter_warning_code", "sensor.lxp_ba10300188_state_of_charge"];
 async function processData() {
   // Ensure sensorData is populated before proceeding
   await Promise.all(Sensors.map(async sensor => {
@@ -49,13 +46,14 @@ async function exec() {
   const consumption = parseInt(sensorData["sensor.power_consumption"] || "0");
   const acPower = parseFloat(sensorData["sensor.inverter_grid_power"] || "0");
   const pvPower = parseFloat(sensorData["sensor.inverter_pv_power"] || "0");
+  const chargeLevel = parseInt(sensorData["sensor.lxp_ba10300188_state_of_charge"] || "0");
   const batteryPower = parseFloat(sensorData["sensor.inverter_battery_power"] || "0");
   const inverterWarningCode = parseFloat(sensorData["sensor.inverter_warning_code"] || "0");
   let theme;
   if (inverterWarningCode > 0) {
-    theme = 'sin';
+    theme = "sin";
   } else {
-    theme = acPower <= 0 ? 'pacific' : 'seablue';
+    theme = acPower <= 0 ? "pacific" : "seablue";
   }
   const pvSymbol = createSourceSymbol({
     source: SourceName.PV,
@@ -67,17 +65,18 @@ async function exec() {
   });
   const batterySymbol = createSourceSymbol({
     source: SourceName.Battery,
-    isSupplying: batteryPower < 0
+    isSupplying: batteryPower < 0,
+    isCharging: batteryPower > 0,
+    chargeLevel: chargeLevel
   });
   const widget = createWidget({
     chartData: chartDT,
-    // subtitle1: `${sensorData["sensor.inverter_grid_power"]}W GRID | ${sensorData["sensor.energy_consumption_today"]}kWh TODAY`,
     subtitle1: `${sensorData["sensor.energy_consumption_today"]}kWh`,
     subtitle2: `${dateFormatter.string(new Date())}`,
     value: `${consumption}`,
     subValue: `W`,
-    headerSymbol: 'bolt.fill',
-    header: '  HOME POWER:',
+    headerSymbol: "bolt.fill",
+    header: "  HOME POWER:",
     pvSymbol: pvSymbol,
     acSymbol: acSymbol,
     batterySymbol: batterySymbol

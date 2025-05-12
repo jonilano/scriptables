@@ -22,8 +22,7 @@ const {
 } = importModule("./utils");
 const {
   TinyCharts
-} = importModule("./tiny-charts"); // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const SCRIPT_NAME = 'tiny-dashboard';
+} = importModule("./tiny-charts");
 const GAP = 10;
 const SYMBOL_SIZE = 16;
 const GRAPH_OPACITY = 0.3;
@@ -209,7 +208,6 @@ function createWidget(args, theme) {
   batterySymbolImg.resizable = true;
   batterySymbolImg.tintColor = textColor;
   batterySymbolImg.imageSize = new Size(18, 18);
-  // listWidget.addSpacer();
 
   // FOOTER
   const footerStack = listWidget.addStack();

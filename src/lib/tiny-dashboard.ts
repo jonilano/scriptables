@@ -12,8 +12,7 @@
 import { getDynamicGradient, getDynamicColor, parseWidgetParams, getDeviceAppearance } from './utils'
 import type { PaletteT } from './utils.types'
 import { TinyCharts } from './tiny-charts'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const SCRIPT_NAME = 'tiny-dashboard';
+
 const GAP = 10
 const SYMBOL_SIZE = 16
 const GRAPH_OPACITY = 0.3
@@ -233,7 +232,6 @@ export function createWidget(args: ArgsT, theme?: { light?: string, dark?: strin
     batterySymbolImg.resizable = true;
     batterySymbolImg.tintColor = textColor;
     batterySymbolImg.imageSize = new Size(18, 18)
-    // listWidget.addSpacer();
 
 
     // FOOTER
