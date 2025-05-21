@@ -1,4 +1,3 @@
-
 export interface BaseEntityState {
   state: string;
   last_changed: string;

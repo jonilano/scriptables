@@ -1,13 +1,4 @@
-// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: deep-purple; icon-glyph: wrench;
-
-/*
- * author: https://github.com/Nodman
- * few common utils I use across scriptable widgets
- */
-
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -16,13 +7,13 @@ exports.currencyFormatter = exports.createAlert = exports.Logger = void 0;
 exports.fetchJson = fetchJson;
 exports.sendNotification = exports.sendErrorNotification = exports.parseWidgetParams = exports.numberFormatterShort = exports.getDynamicGradient = exports.getDynamicColor = exports.getDeviceAppearance = exports.getDaysInMonth = void 0;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const SCRIPT_NAME = 'utils';
+const SCRIPT_NAME = "utils";
 const DEBUG = true;
-const ERROR_NOTIFICATION_ID = '_error';
+const ERROR_NOTIFICATION_ID = "_error";
 class Logger {
   constructor(prefix) {
-    this.prefix = prefix ?? '';
-    this.separator = prefix ? ': ' : '';
+    this.prefix = prefix ?? "";
+    this.separator = prefix ? ": " : "";
   }
   print(method, message) {
     if (!DEBUG) {
@@ -31,17 +22,17 @@ class Logger {
     console[method](`${this.prefix}${this.separator}${message}`);
   }
   log(message) {
-    this.print('log', message);
+    this.print("log", message);
   }
   warn(message) {
-    this.print('warn', message);
+    this.print("warn", message);
   }
   error(message) {
-    this.print('error', message);
+    this.print("error", message);
   }
 }
 exports.Logger = Logger;
-const requestLogger = new Logger('Request');
+const requestLogger = new Logger("Request");
 async function fetchJson(url, headers) {
   try {
     const req = new Request(url);
@@ -70,7 +61,7 @@ async function fetchJson(url, headers) {
 const sendNotification = ({
   title,
   message,
-  id = 'notification',
+  id = "notification",
   userInfo,
   date,
   actions = [],
@@ -92,9 +83,9 @@ const sendNotification = ({
   if (openURL) {
     notification.openURL = openURL;
   }
-  actions.forEach(action => {
+  for (const action of actions) {
     notification.addAction(...action);
-  });
+  }
   notification.scriptName = scriptName || Script.name();
   notification.body = message;
   notification.schedule();
@@ -146,11 +137,12 @@ const getDynamicGradient = ({
 };
 exports.getDynamicGradient = getDynamicGradient;
 const parseWidgetParams = params => {
-  if (typeof params !== 'string') {
+  if (typeof params !== "string") {
     return {};
   }
-  return params.split(';').reduce((acc, item) => {
-    const [key, value = ''] = item.split('=');
+  return params.split(";").reduce((acc, item) => {
+    const [key, value = ""] = item.split("=");
+    // biome-ignore lint/performance/noAccumulatingSpread: acceptable for small input size
     return {
       ...acc,
       [key.trim()]: value.trim() ?? true
@@ -158,17 +150,17 @@ const parseWidgetParams = params => {
   }, {});
 };
 exports.parseWidgetParams = parseWidgetParams;
-const numberFormatterShort = exports.numberFormatterShort = new Intl.NumberFormat('ua', {
-  notation: 'compact',
-  compactDisplay: 'short',
+const numberFormatterShort = exports.numberFormatterShort = new Intl.NumberFormat("ua", {
+  notation: "compact",
+  compactDisplay: "short",
   maximumFractionDigits: 1,
   minimumFractionDigits: 0
 }).format;
-const currencyFormatter = exports.currencyFormatter = new Intl.NumberFormat('uk-UA', {
+const currencyFormatter = exports.currencyFormatter = new Intl.NumberFormat("uk-UA", {
   minimumFractionDigits: 2
 }).format;
 const getDeviceAppearance = () => {
-  return Device.isUsingDarkAppearance() ? 'dark' : 'light';
+  return Device.isUsingDarkAppearance() ? "dark" : "light";
 };
 exports.getDeviceAppearance = getDeviceAppearance;
 Script.complete();

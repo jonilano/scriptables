@@ -2,7 +2,7 @@
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: magic;
 //Shoutout to riverwolf for sharing the code to fetch remaining reminders for the day. https://talk.automators.fm/t/calendar-reminders/9236
-export { }
+export {};
 
 const widget = new ListWidget();
 
@@ -15,8 +15,8 @@ queryStartTime.setHours(23, 59, 59, 0);
 const queryEndTime = new Date(NOW);
 queryEndTime.setHours(23, 59, 59, 0);
 const todayReminders = await Reminder.incompleteDueBetween(
-    queryStartTime,
-    queryEndTime
+  queryStartTime,
+  queryEndTime
 );
 
 // Find overdue reminders
@@ -44,7 +44,8 @@ imagestack.addSpacer();
 const counterstack = widget.addStack();
 counterstack.setPadding(5, 5, 5, 5);
 counterstack.addSpacer();
-counterstack.addText(String(todayAndOverdue.length)).font = Font.boldSystemFont(25);
+counterstack.addText(String(todayAndOverdue.length)).font =
+  Font.boldSystemFont(25);
 counterstack.addSpacer();
 
 widget.url = "x-apple-reminderkit://";

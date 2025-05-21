@@ -1,3 +1,9 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TinyCharts = void 0;
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: teal; icon-glyph: chart-line;
@@ -7,14 +13,7 @@
  * small chart, for now supports only area chart
  */
 
-'use strict';
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.TinyCharts = void 0;
-const SCRIPT_NAME = 'tiny-charts';
+const SCRIPT_NAME = "tiny-charts";
 class TinyCharts {
   constructor(width, height) {
     this.width = width;

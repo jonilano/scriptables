@@ -34,8 +34,8 @@ function createSourceSymbol({
       symbolName = "batteryblock";
       symbolName += isSupplying ? ".fill" : "";
       if (isCharging) {
-        symbolName = "bolt." + symbolName;
-        symbolName = chargeLevel === 100 ? symbolName + ".fill" : symbolName;
+        symbolName = `bolt.${symbolName}`;
+        symbolName = chargeLevel === 100 ? `${symbolName}.fill` : symbolName;
       }
       break;
     default:

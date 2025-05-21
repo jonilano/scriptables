@@ -13,10 +13,14 @@ function generateChartData(data) {
   });
   relevantData.sort((a, b) => new Date(a.last_changed).getTime() - new Date(b.last_changed).getTime());
   for (let i = 0; i < relevantData.length; i++) {
-    if (relevantData[i].state === null && i > 0 && i < relevantData.length - 1) {
-      const prevValue = parseFloat(relevantData[i - 1].state);
-      const nextValue = parseFloat(relevantData[i + 1].state);
-      relevantData[i].state = ((prevValue + nextValue) / 2).toString();
+    if ((relevantData[i].state === null || relevantData[i].state === "") && i > 0 && i < relevantData.length - 1) {
+      const prevState = relevantData[i - 1]?.state;
+      const nextState = relevantData[i + 1]?.state;
+      if (prevState != null && nextState != null) {
+        const prevValue = Number.parseFloat(prevState);
+        const nextValue = Number.parseFloat(nextState);
+        relevantData[i].state = ((prevValue + nextValue) / 2).toString();
+      }
     }
   }
   const chartData = [];
@@ -32,10 +36,13 @@ function generateChartData(data) {
       const entry = relevantData[currentIndex];
       const timestamp = new Date(entry.last_changed).getTime();
       if (timestamp >= currentIntervalStart && timestamp < currentIntervalEnd) {
-        const timeDifference = currentIntervalEnd - timestamp;
-        const weight = Math.max(0, Math.min(1, 1 - timeDifference / interval));
-        totalWeight += weight;
-        weightedSum += parseFloat(entry.state) * weight;
+        const stateValue = entry.state;
+        if (stateValue != null && stateValue !== "") {
+          const timeDifference = currentIntervalEnd - timestamp;
+          const weight = Math.max(0, Math.min(1, 1 - timeDifference / interval));
+          totalWeight += weight;
+          weightedSum += Number.parseFloat(stateValue) * weight;
+        }
         currentIndex--;
       } else {
         break;

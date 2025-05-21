@@ -1,30 +1,30 @@
 {
-	"name": "scriptables",
-	"version": "1.0.0",
-	"description": "my scriptable project",
-	"main": "index.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"lint": "biome lint src",
-		"lint:fix": "biome lint --write src",
-		"biome:check": "biome check --write src",
-		"type-check": "tsc --noEmit",
-		"check": "npm run lint && npm run type-check",
-		"prebuild": "npm run check",
-		"build": "babel ./src -d build --extensions '.ts'",
-		"sync:build": "rsync -av --exclude='*.ts' ./src/ ./build/",
-		"sync:scriptable": "rsync -av ./build/ \"$HOME/Library/Mobile Documents/iCloud~dk~simonbs~Scriptable/Documents/\"",
-		"deploy": "npm run build && npm run sync:build && npm run sync:scriptable"
-	},
-	"author": "Jonathan Ilano <jonathan.ilano@gmail.com>",
-	"license": "MIT",
-	"devDependencies": {
-		"@babel/cli": "^7.27.0",
-		"@babel/core": "^7.26.10",
-		"@babel/plugin-transform-modules-commonjs": "^7.26.3",
-		"@babel/preset-typescript": "^7.27.0",
-		"@biomejs/biome": "1.9.4",
-		"@types/scriptable-ios": "^1.7.7",
-		"typescript": "^5.8.3"
-	}
+  "name": "scriptables",
+  "version": "1.0.0",
+  "description": "my scriptable project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "biome lint src",
+    "lint:fix": "biome lint --write src",
+    "biome:check": "biome check --write src",
+    "type-check": "tsc --noEmit",
+    "check": "npm run lint && npm run type-check",
+    "prebuild": "npm run check",
+    "build": "babel ./src -d build --extensions '.ts'",
+    "sync:build": "rsync -av --exclude='*.ts' ./src/ ./build/",
+    "sync:scriptable": "rsync -av ./build/ \"$HOME/Library/Mobile Documents/iCloud~dk~simonbs~Scriptable/Documents/\"",
+    "deploy": "npm run build && npm run sync:build && npm run sync:scriptable"
+  },
+  "author": "Jonathan Ilano <jonathan.ilano@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.27.0",
+    "@babel/core": "^7.26.10",
+    "@babel/plugin-transform-modules-commonjs": "^7.26.3",
+    "@babel/preset-typescript": "^7.27.0",
+    "@biomejs/biome": "1.9.4",
+    "@types/scriptable-ios": "^1.7.7",
+    "typescript": "^5.8.3"
+  }
 }

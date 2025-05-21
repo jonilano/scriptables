@@ -17,7 +17,7 @@ async function fetchEntityState(entityID) {
     const req = new Request(`${url}/api/states/${entityID}`);
     req.timeoutInterval = timeout;
     req.headers = {
-      "Authorization": `Bearer ${ha.token}`,
+      Authorization: `Bearer ${ha.token}`,
       "content-type": "application/json"
     };
     const result = await req.loadJSON();
@@ -35,7 +35,7 @@ async function fetchEntityStateHistory(entityID, startTime) {
     const req = new Request(`${url}/api/history/period/${encodeURIComponent(startTime)}?filter_entity_id=${entityID}&minimal_response`);
     req.timeoutInterval = timeout;
     req.headers = {
-      "Authorization": `Bearer ${ha.token}`,
+      Authorization: `Bearer ${ha.token}`,
       "content-type": "application/json"
     };
     return await req.loadJSON();

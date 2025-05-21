@@ -43,12 +43,12 @@ async function processData() {
   return exec();
 }
 async function exec() {
-  const consumption = parseInt(sensorData["sensor.power_consumption"] || "0");
-  const acPower = parseFloat(sensorData["sensor.inverter_grid_power"] || "0");
-  const pvPower = parseFloat(sensorData["sensor.inverter_pv_power"] || "0");
-  const chargeLevel = parseInt(sensorData["sensor.lxp_ba10300188_state_of_charge"] || "0");
-  const batteryPower = parseFloat(sensorData["sensor.inverter_battery_power"] || "0");
-  const inverterWarningCode = parseFloat(sensorData["sensor.inverter_warning_code"] || "0");
+  const consumption = Number.parseInt(sensorData["sensor.power_consumption"] || "0");
+  const acPower = Number.parseFloat(sensorData["sensor.inverter_grid_power"] || "0");
+  const pvPower = Number.parseFloat(sensorData["sensor.inverter_pv_power"] || "0");
+  const chargeLevel = Number.parseInt(sensorData["sensor.lxp_ba10300188_state_of_charge"] || "0");
+  const batteryPower = Number.parseFloat(sensorData["sensor.inverter_battery_power"] || "0");
+  const inverterWarningCode = Number.parseFloat(sensorData["sensor.inverter_warning_code"] || "0");
   let theme;
   if (inverterWarningCode > 0) {
     theme = "sin";
@@ -74,7 +74,7 @@ async function exec() {
     subtitle1: `${sensorData["sensor.energy_consumption_today"]}kWh`,
     subtitle2: `${dateFormatter.string(new Date())}`,
     value: `${consumption}`,
-    subValue: `W`,
+    subValue: "W",
     headerSymbol: "bolt.fill",
     header: "  HOME POWER:",
     pvSymbol: pvSymbol,
