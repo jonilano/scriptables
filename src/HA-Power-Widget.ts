@@ -24,7 +24,26 @@ const Sensors = [
   "sensor.inverter_pv_power",
   "sensor.inverter_battery_power",
   "sensor.inverter_warning_code",
-  "sensor.lxp_ba10300188_state_of_charge"
+  "sensor.lxp_ba10300188_state_of_charge",
+
+  // core inverter roles
+  "binary_sensor.inverter_fault",
+  "binary_sensor.inverter_exporting_to_grid",
+
+  // primary sources
+  "binary_sensor.inverter_grid_powering_home",
+  "binary_sensor.inverter_battery_powering_home",
+  "binary_sensor.inverter_solar_powering_home",
+
+  // assisting roles
+  "binary_sensor.inverter_grid_assisting",
+  "binary_sensor.inverter_solar_assisting",
+  "binary_sensor.inverter_battery_assisting",
+  "binary_sensor.inverter_grid_topping_up",
+
+  // charging states
+  "binary_sensor.inverter_pv_charging_battery",
+  "binary_sensor.inverter_grid_charging_battery"
 ];
 
 async function processData() {
@@ -79,6 +98,55 @@ async function exec() {
   );
   let theme: string;
 
+  const flags = {
+    fault: sensorData["binary_sensor.inverter_fault"] === "on",
+
+    // primary sources
+    gridHome: sensorData["binary_sensor.inverter_grid_powering_home"] === "on",
+    solarHome:
+      sensorData["binary_sensor.inverter_solar_powering_home"] === "on",
+    battHome:
+      sensorData["binary_sensor.inverter_battery_powering_home"] === "on",
+
+    // assisting roles
+    gridAssist: sensorData["binary_sensor.inverter_grid_assisting"] === "on",
+    solarAssist: sensorData["binary_sensor.inverter_solar_assisting"] === "on",
+    battAssist: sensorData["binary_sensor.inverter_battery_assisting"] === "on",
+
+    // charging + export
+    pvCharge: sensorData["binary_sensor.inverter_pv_charging_battery"] === "on",
+    gridTop: sensorData["binary_sensor.inverter_grid_topping_up"] === "on",
+    gridCharge:
+      sensorData["binary_sensor.inverter_grid_charging_battery"] === "on",
+    exporting: sensorData["binary_sensor.inverter_exporting_to_grid"] === "on"
+  };
+
+  const statusLines: string[] = [];
+
+  if (flags.fault) {
+    statusLines.push("🛑 Inverter Fault");
+  } else {
+    // primary
+    if (flags.gridHome) statusLines.push("🌙 Grid Powering Home");
+    if (flags.solarHome) statusLines.push("☀ Solar Powering Home");
+    if (flags.battHome) statusLines.push("🔋 Battery Powering Home");
+
+    // assisting
+    if (flags.gridAssist) statusLines.push("🔌 Grid Assisting");
+    if (flags.solarAssist) statusLines.push("🌞 Solar Assisting");
+    if (flags.battAssist) statusLines.push("🔋 Battery Assisting");
+
+    // charging + export
+    if (flags.pvCharge) statusLines.push("🔆 Solar Charging Battery");
+    if (flags.gridTop) statusLines.push("⚡ Grid Topping Up");
+    if (flags.gridCharge) statusLines.push("🔌 Rapid Charging");
+    if (flags.exporting) statusLines.push("🌞 Exporting to Grid");
+  }
+
+  if (statusLines.length === 0) statusLines.push("😴 Idle / No Power Flow");
+
+  const inverterStatusText = statusLines.join("\n");
+
   if (inverterWarningCode > 0) {
     theme = "sin";
   } else {
@@ -102,10 +170,15 @@ async function exec() {
     chargeLevel: chargeLevel
   });
 
+  const clockSymbol = createSourceSymbol({
+    source: SourceName.Clock
+  });
+
   const widget = createWidget(
     {
       chartData: chartDT,
-      subtitle1: `${sensorData["sensor.energy_consumption_today"]}kWh`,
+      // subtitle1: `${sensorData["sensor.energy_consumption_today"]}kWh`,
+      subtitle1: inverterStatusText,
       subtitle2: `${dateFormatter.string(new Date())}`,
       value: `${consumption}`,
       subValue: "W",
@@ -113,7 +186,8 @@ async function exec() {
       header: "  HOME POWER:",
       pvSymbol: pvSymbol,
       acSymbol: acSymbol,
-      batterySymbol: batterySymbol
+      batterySymbol: batterySymbol,
+      clockSymbol: clockSymbol
     },
     {
       dark: theme,

@@ -114,7 +114,8 @@ const TYPOGRAPHY = {
   title: 40,
   subtitle: 15,
   body: 10,
-  caption: 10
+  // caption: 10
+  caption: 11
 };
 function getPalette(palette = {}) {
   const {
@@ -137,7 +138,8 @@ function createWidget(args, theme) {
     subValue,
     pvSymbol,
     acSymbol,
-    batterySymbol
+    batterySymbol,
+    clockSymbol
   } = args;
   const appearence = getDeviceAppearance();
   const palette = getPalette(theme);
@@ -189,52 +191,50 @@ function createWidget(args, theme) {
     subValueText.font = Font.boldSystemFont(TYPOGRAPHY.body);
     subValueText.minimumScaleFactor = 0.5;
   }
-
-  // SOURCE ICONS
-  const sourceStack = listWidget.addStack();
-  sourceStack.layoutHorizontally();
-  sourceStack.setPadding(0, GAP, 0, 0);
-  const pvSymbolImg = sourceStack.addImage(pvSymbol.image);
-  pvSymbolImg.resizable = true;
-  pvSymbolImg.tintColor = textColor;
-  pvSymbolImg.imageSize = new Size(18, 18);
-  const acSymbolImg = sourceStack.addImage(acSymbol.image);
-  acSymbolImg.resizable = true;
-  acSymbolImg.tintColor = textColor;
-  acSymbolImg.imageSize = new Size(18, 18);
-  const batterySymbolImg = sourceStack.addImage(batterySymbol.image);
-  batterySymbolImg.resizable = true;
-  batterySymbolImg.tintColor = textColor;
-  batterySymbolImg.imageSize = new Size(18, 18);
-
-  // FOOTER
-  const footerStack = listWidget.addStack();
-  const footerStackBottomPadding = (2 - [subtitle1, subtitle2].reduce((acc, item) => acc + (item ? 1 : 0), 0)) * GAP;
-  footerStack.setPadding(0, GAP, footerStackBottomPadding, 0);
-  footerStack.layoutVertically();
-  footerStack.spacing = 2;
+  const statusStack = listWidget.addStack();
+  statusStack.setPadding(0, GAP, 0, 0);
+  statusStack.layoutVertically();
+  statusStack.spacing = 2;
   if (subtitle1) {
-    const subtitle1Text = footerStack.addText(`${subtitle1} TODAY ${subtitle2}`);
-    subtitle1Text.textColor = textColor;
-    subtitle1Text.font = Font.lightSystemFont(TYPOGRAPHY.caption);
+    const lines = typeof subtitle1 === "string" ? subtitle1.split("\n").map(s => s.trim()).filter(Boolean) : subtitle1;
+    for (const line of lines) {
+      const lineStack = statusStack.addStack();
+      // lineStack.setPadding(2, 0, 2, 0);
+      lineStack.setPadding(0, 0, 0, 0);
+      const t = lineStack.addText(line);
+      t.textColor = textColor;
+      t.font = Font.lightSystemFont(TYPOGRAPHY.caption);
+      // t.lineLimit = 1;
+    }
+  }
+  if (subtitle2) {
+    const timeStack = statusStack.addStack();
+    const t = timeStack.addText(`🕘 ${subtitle2}`);
+    t.textColor = textColor;
+    t.font = Font.lightSystemFont(TYPOGRAPHY.caption);
   }
 
-  // if (subtitle2) {
-  //     const subtitle2Text = footerStack.addText(subtitle2)
-  //
-  //     subtitle2Text.textColor = textColor
-  //     subtitle2Text.font = Font.lightSystemFont(TYPOGRAPHY.caption)
-  // }
-
-  // listWidget.addSpacer(GAP / 2)
+  // FOOTER
   listWidget.addSpacer(3);
+
+  // --- Reserve vertical space for dynamic subtitle block ---
+  if (Array.isArray(subtitle1)) {
+    const maxLines = 3; // widget can visually support 3 lines
+    const missing = Math.max(0, maxLines - subtitle1.length);
+    listWidget.addSpacer(missing * 6);
+  }
+  const statusLineCount = typeof subtitle1 === "string" ? subtitle1.split("\n").filter(Boolean).length : Array.isArray(subtitle1) ? subtitle1.length : 0;
 
   // GRAPH
   const graphStack = listWidget.addStack();
   graphStack.setPadding(0, 0, 0, 0);
   graphStack.backgroundColor = Color.clear();
   if (chartData) {
-    const chart = new TinyCharts(GRAPH_WIDTH, GRAPH_HEIGHT);
+    // const chart = new TinyCharts(GRAPH_WIDTH + 110, GRAPH_HEIGHT);
+    // const chart = new TinyCharts(GRAPH_WIDTH, GRAPH_HEIGHT);
+    // const extraWidth = statusLineCount >= 2 ? 110 : 0;
+    const extraWidth = statusLineCount >= 2 ? 55 * statusLineCount : 0;
+    const chart = new TinyCharts(GRAPH_WIDTH + extraWidth, GRAPH_HEIGHT);
     chart.setFillColor(fillColor);
     chart.drawAreaChart(chartData);
     graphStack.addImage(chart.getImage());

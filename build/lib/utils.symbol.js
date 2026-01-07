@@ -9,6 +9,7 @@ let SourceName = exports.SourceName = /*#__PURE__*/function (SourceName) {
   SourceName["PV"] = "PV";
   SourceName["AC"] = "AC";
   SourceName["Battery"] = "Battery";
+  SourceName["Clock"] = "Clock";
   return SourceName;
 }({});
 function createSourceSymbol({
@@ -37,6 +38,9 @@ function createSourceSymbol({
         symbolName = `bolt.${symbolName}`;
         symbolName = chargeLevel === 100 ? `${symbolName}.fill` : symbolName;
       }
+      break;
+    case "Clock":
+      symbolName = "clock.arrow.trianglehead.counterclockwise.rotate.90";
       break;
     default:
       console.error("Unknown source");

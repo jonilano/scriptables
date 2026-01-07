@@ -1,7 +1,8 @@
 export enum SourceName {
   PV = "PV",
   AC = "AC",
-  Battery = "Battery"
+  Battery = "Battery",
+  Clock = "Clock"
 }
 
 export interface SourceState {
@@ -40,6 +41,9 @@ export function createSourceSymbol({
         symbolName = `bolt.${symbolName}`;
         symbolName = chargeLevel === 100 ? `${symbolName}.fill` : symbolName;
       }
+      break;
+    case "Clock":
+      symbolName = "clock.arrow.trianglehead.counterclockwise.rotate.90";
       break;
     default:
       console.error("Unknown source");
