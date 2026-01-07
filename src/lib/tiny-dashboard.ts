@@ -253,7 +253,7 @@ export function createWidget(
 
   if (subtitle2) {
     const timeStack = statusStack.addStack();
-    const t = timeStack.addText(`🕘 ${subtitle2}`);
+    const t = timeStack.addText(`${subtitle2}`);
     t.textColor = textColor;
     t.font = Font.lightSystemFont(TYPOGRAPHY.caption);
   }

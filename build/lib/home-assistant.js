@@ -25,10 +25,21 @@ async function fetchEntityState(entityID) {
   }
   try {
     return await tryFetch(ha.internalUrl, timeoutInterval.internal);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_) {
-    return await tryFetch(ha.externalUrl, timeoutInterval.external);
+    try {
+      return await tryFetch(ha.externalUrl, timeoutInterval.external);
+    } catch {
+      return {
+        message: "offline"
+      };
+    }
   }
+  // try {
+  //   return await tryFetch(ha.internalUrl, timeoutInterval.internal);
+  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // } catch (_) {
+  //   return await tryFetch(ha.externalUrl, timeoutInterval.external);
+  // }
 }
 async function fetchEntityStateHistory(entityID, startTime) {
   async function tryFetch(url, timeout) {
@@ -42,10 +53,19 @@ async function fetchEntityStateHistory(entityID, startTime) {
   }
   try {
     return await tryFetch(ha.internalUrl, timeoutInterval.internal);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_) {
-    return await tryFetch(ha.externalUrl, timeoutInterval.external);
+    try {
+      return await tryFetch(ha.externalUrl, timeoutInterval.external);
+    } catch {
+      return [];
+    }
   }
+  // try {
+  //   return await tryFetch(ha.internalUrl, timeoutInterval.internal);
+  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // } catch (_) {
+  //   return await tryFetch(ha.externalUrl, timeoutInterval.external);
+  // }
 }
 
 // helper function

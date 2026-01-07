@@ -16,6 +16,25 @@ const Logger = importModule("./lib/Logger.js");
 const {
   createWidget
 } = importModule("./lib/tiny-dashboard");
+const CACHE_FILE = "ha-power-cache.json";
+function saveCache(data) {
+  const fm = FileManager.local();
+  const path = fm.joinPath(fm.documentsDirectory(), CACHE_FILE);
+  fm.writeString(path, JSON.stringify({
+    ts: Date.now(),
+    data
+  }));
+}
+function loadCache() {
+  const fm = FileManager.local();
+  const path = fm.joinPath(fm.documentsDirectory(), CACHE_FILE);
+  if (!fm.fileExists(path)) return null;
+  try {
+    return JSON.parse(fm.readString(path));
+  } catch {
+    return null;
+  }
+}
 const logger = new Logger();
 const dateFormatter = new DateFormatter();
 dateFormatter.useShortTimeStyle();
@@ -34,11 +53,16 @@ async function processData() {
   // Ensure sensorData is populated before proceeding
   await Promise.all(Sensors.map(async sensor => {
     const entityState = await fetchEntityState(sensor);
-    if ("message" in entityState) {
-      sensorData[sensor] = entityState.message;
-    } else {
-      sensorData[sensor] = entityState.state;
+    if ("message" in entityState && entityState.message === "offline") {
+      throw new Error("HA_OFFLINE");
     }
+    sensorData[sensor] = "message" in entityState ? entityState.message : entityState.state;
+    // const entityState = await fetchEntityState(sensor);
+    // if ("message" in entityState) {
+    //   sensorData[sensor] = entityState.message;
+    // } else {
+    //   sensorData[sensor] = entityState.state;
+    // }
   }));
   logger.log("Sensor Data:");
   logger.log(sensorData);
@@ -96,6 +120,11 @@ async function exec() {
   }
   if (statusLines.length === 0) statusLines.push("😴 Idle / No Power Flow");
   const inverterStatusText = statusLines.join("\n");
+  saveCache({
+    consumption,
+    inverterStatusText: statusLines,
+    chartDT
+  });
   if (inverterWarningCode > 0) {
     theme = "sin";
   } else {
@@ -122,7 +151,7 @@ async function exec() {
     chartData: chartDT,
     // subtitle1: `${sensorData["sensor.energy_consumption_today"]}kWh`,
     subtitle1: inverterStatusText,
-    subtitle2: `${dateFormatter.string(new Date())}`,
+    subtitle2: `🕒 ${dateFormatter.string(new Date())}`,
     value: `${consumption}`,
     subValue: "W",
     headerSymbol: "bolt.fill",
@@ -138,10 +167,102 @@ async function exec() {
   Script.setWidget(widget);
   return widget;
 }
-if (config.runsInApp) {
-  const widget = await processData();
-  await widget.presentSmall();
-} else {
-  await processData();
+
+// try {
+//   if (config.runsInApp) {
+//     const widget = await processData();
+//     await widget.presentSmall();
+//   } else {
+//     await processData();
+//   }
+// } catch {
+//   const w = new ListWidget();
+//   w.backgroundColor = new Color("#1c1c1e");
+//
+//   const t = w.addText("Home Assistant");
+//   t.font = Font.semiboldSystemFont(14);
+//   t.textColor = Color.white();
+//
+//   w.addSpacer(6);
+//
+//   const s = w.addText("System Offline");
+//   s.font = Font.boldSystemFont(16);
+//   s.textColor = new Color("#ff453a");
+//
+//   Script.setWidget(w);
+// }
+// // if (config.runsInApp) {
+// //   const widget = await processData();
+// //   await widget.presentSmall();
+// // } else {
+// //   await processData();
+// // }
+//
+// Script.complete();
+
+try {
+  if (config.runsInApp) {
+    const widget = await processData();
+    await widget.presentSmall();
+  } else {
+    await processData();
+  }
+} catch {
+  const cache = loadCache();
+  if (cache) {
+    // const ageMin = Math.round((Date.now() - cache.ts) / 60000);
+    const ageMin = cache.ts;
+    const pvSymbol = createSourceSymbol({
+      source: SourceName.PV,
+      isSupplying: false
+    });
+    const acSymbol = createSourceSymbol({
+      source: SourceName.AC,
+      isSupplying: false
+    });
+    const batterySymbol = createSourceSymbol({
+      source: SourceName.Battery,
+      isSupplying: false
+    });
+    const clockSymbol = createSourceSymbol({
+      source: SourceName.Clock
+    });
+    const widget = createWidget({
+      chartData: cache.data.chartDT,
+      subtitle1: cache.data.inverterStatusText.join("\n"),
+      // subtitle2: `🕒 Cached ${ageMin} min ago`,
+      // subtitle2: `🕒 ${ageMin} (cached)`,
+      subtitle2: `💾 ${dateFormatter.string(new Date(ageMin))} (cached)`,
+      value: `${cache.data.consumption}`,
+      subValue: "W",
+      headerSymbol: "bolt.fill",
+      header: "  HOME POWER:",
+      pvSymbol,
+      acSymbol,
+      batterySymbol,
+      clockSymbol
+    }, {
+      dark: "pacific",
+      light: "pacific"
+    });
+    Script.setWidget(widget);
+    // Script.complete();
+  }
+
+  // true offline, no cache
+  // const w = new ListWidget();
+  // w.backgroundColor = new Color("#1c1c1e");
+  //
+  // const t = w.addText("🏠 Home Assistant");
+  // t.font = Font.semiboldSystemFont(14);
+  // t.textColor = Color.white();
+  //
+  // w.addSpacer(6);
+  //
+  // const s = w.addText("System Offline");
+  // s.font = Font.boldSystemFont(16);
+  // s.textColor = new Color("#ff453a");
+  //
+  // Script.setWidget(w);
 }
 Script.complete();

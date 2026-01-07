@@ -27,6 +27,10 @@ export interface EntityState extends BaseEntityState {
 
 export type EntityStateHistory = EntityState[][];
 
-export interface EntityNotFound {
-  message: "Entity not found.";
-}
+// export interface EntityNotFound {
+//   message: "Entity not found.";
+// }
+
+export type EntityNotFound =
+  | { message: "Entity not found." }
+  | { message: "offline" };
