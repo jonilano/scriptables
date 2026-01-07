@@ -232,7 +232,7 @@ try {
       subtitle1: cache.data.inverterStatusText.join("\n"),
       // subtitle2: `🕒 Cached ${ageMin} min ago`,
       // subtitle2: `🕒 ${ageMin} (cached)`,
-      subtitle2: `💾 ${dateFormatter.string(new Date(ageMin))} (cached)`,
+      subtitle2: `🕒 ${dateFormatter.string(new Date(ageMin))} (cached)`,
       value: `${cache.data.consumption}`,
       subValue: "W",
       headerSymbol: "bolt.fill",
