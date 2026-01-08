@@ -144,13 +144,13 @@ async function exec() {
     statusLines.push("🛑 Inverter Fault");
   } else {
     if (flags.solarHome) statusLines.push("☀ Solar Powering Home");
-    if (flags.gridHome) statusLines.push("🔌 Grid Powering Home");
     if (flags.battHome) statusLines.push("🔋 Battery Powering Home");
+    if (flags.gridHome) statusLines.push("🔌 Grid Powering Home");
 
     if (flags.solarCharge) statusLines.push("🔆 Solar Charging Battery");
     if (flags.gridCharge) statusLines.push("⚡ Grid Charging Battery");
 
-    if (flags.exporting) statusLines.push("📤 Exporting to Grid");
+    if (flags.exporting) statusLines.push("⚡ Exporting to Grid");
 
     // if (statusLines.length === 0) statusLines.push("😴 Idle / No Power Flow");
   }
