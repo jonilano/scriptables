@@ -9,6 +9,12 @@ import { generateChartData } from "./lib/chart-data";
 import Logger from "./lib/Logger.js";
 import { createWidget } from "./lib/tiny-dashboard";
 
+class WidgetRendered extends Error {
+  constructor() {
+    super("Widget rendered – stop execution");
+  }
+}
+
 type PowerWidgetCache = {
   ts: number;
   data: {
@@ -247,70 +253,150 @@ async function exec() {
 //
 // Script.complete();
 
+// try {
+//   if (config.runsInApp) {
+//     const widget = await processData();
+//     await widget.presentSmall();
+//   } else {
+//     await processData();
+//   }
+// } catch {
+//   const cache = loadCache();
+//
+//   if (cache) {
+//     // const ageMin = Math.round((Date.now() - cache.ts) / 60000);
+//     const ageMin = cache.ts;
+//
+//     const pvSymbol = createSourceSymbol({
+//       source: SourceName.PV,
+//       isSupplying: false
+//     });
+//     const acSymbol = createSourceSymbol({
+//       source: SourceName.AC,
+//       isSupplying: false
+//     });
+//     const batterySymbol = createSourceSymbol({
+//       source: SourceName.Battery,
+//       isSupplying: false
+//     });
+//     const clockSymbol = createSourceSymbol({ source: SourceName.Clock });
+//
+//     const widget = createWidget(
+//       {
+//         chartData: cache.data.chartDT,
+//         subtitle1: cache.data.inverterStatusText.join("\n"),
+//         // subtitle2: `🕒 Cached ${ageMin} min ago`,
+//         subtitle2: `🟠 ${dateFormatter.string(new Date(ageMin))} (cached)`,
+//         value: `${cache.data.consumption}`,
+//         subValue: "W",
+//         headerSymbol: "bolt.fill",
+//         header: "  HOME POWER:",
+//         pvSymbol,
+//         acSymbol,
+//         batterySymbol,
+//         clockSymbol
+//       },
+//       { dark: "pacific", light: "pacific" }
+//     );
+//     Script.setWidget(widget);
+//     // Script.complete();
+//   }
+//
+//   // true offline, no cache
+//   // const w = new ListWidget();
+//   // w.backgroundColor = new Color("#1c1c1e");
+//   //
+//   // const t = w.addText("🏠 Home Assistant");
+//   // t.font = Font.semiboldSystemFont(14);
+//   // t.textColor = Color.white();
+//   //
+//   // w.addSpacer(6);
+//   //
+//   // const s = w.addText("System Offline");
+//   // s.font = Font.boldSystemFont(16);
+//   // s.textColor = new Color("#ff453a");
+//   //
+//   // Script.setWidget(w);
+// }
+//
+// Script.complete();
+
 try {
-  if (config.runsInApp) {
-    const widget = await processData();
-    await widget.presentSmall();
-  } else {
-    await processData();
+  try {
+    if (config.runsInApp) {
+      const widget = await processData();
+      await widget.presentSmall();
+    } else {
+      await processData();
+    }
+  } catch (err) {
+    const cache = loadCache();
+
+    if (cache) {
+      // const ageMin = Math.round((Date.now() - cache.ts) / 60000);
+      const ageMin = cache.ts;
+
+      const pvSymbol = createSourceSymbol({
+        source: SourceName.PV,
+        isSupplying: false
+      });
+      const acSymbol = createSourceSymbol({
+        source: SourceName.AC,
+        isSupplying: false
+      });
+      const batterySymbol = createSourceSymbol({
+        source: SourceName.Battery,
+        isSupplying: false
+      });
+      const clockSymbol = createSourceSymbol({ source: SourceName.Clock });
+
+      const widget = createWidget(
+        {
+          chartData: cache.data.chartDT,
+          subtitle1: cache.data.inverterStatusText.join("\n"),
+          // subtitle2: `🕒 Cached ${ageMin} min ago`,
+          subtitle2: `🟠 ${dateFormatter.string(new Date(ageMin))} (cached)`,
+          value: `${cache.data.consumption}`,
+          subValue: "W",
+          headerSymbol: "bolt.fill",
+          header: "  HOME POWER:",
+          pvSymbol,
+          acSymbol,
+          batterySymbol,
+          clockSymbol
+        },
+        { dark: "pacific", light: "pacific" }
+      );
+
+      Script.setWidget(widget);
+      Script.complete();
+      throw new WidgetRendered();
+    }
+
+    const w = new ListWidget();
+    w.backgroundColor = new Color("#1c1c1e");
+
+    const t = w.addText("🧱 Widget Error");
+    t.font = Font.semiboldSystemFont(14);
+    t.textColor = Color.white();
+
+    w.addSpacer(6);
+
+    const s = w.addText("Initialization failed");
+    s.font = Font.boldSystemFont(16);
+    s.textColor = new Color("#ff453a");
+
+    const d = w.addText("No live or cached data available");
+    d.font = Font.systemFont(12);
+    d.textColor = new Color("#ff9f0a");
+
+    Script.setWidget(w);
+    Script.complete();
+    throw new WidgetRendered();
   }
-} catch {
-  const cache = loadCache();
-
-  if (cache) {
-    // const ageMin = Math.round((Date.now() - cache.ts) / 60000);
-    const ageMin = cache.ts;
-
-    const pvSymbol = createSourceSymbol({
-      source: SourceName.PV,
-      isSupplying: false
-    });
-    const acSymbol = createSourceSymbol({
-      source: SourceName.AC,
-      isSupplying: false
-    });
-    const batterySymbol = createSourceSymbol({
-      source: SourceName.Battery,
-      isSupplying: false
-    });
-    const clockSymbol = createSourceSymbol({ source: SourceName.Clock });
-
-    const widget = createWidget(
-      {
-        chartData: cache.data.chartDT,
-        subtitle1: cache.data.inverterStatusText.join("\n"),
-        // subtitle2: `🕒 Cached ${ageMin} min ago`,
-        subtitle2: `🟠 ${dateFormatter.string(new Date(ageMin))} (cached)`,
-        value: `${cache.data.consumption}`,
-        subValue: "W",
-        headerSymbol: "bolt.fill",
-        header: "  HOME POWER:",
-        pvSymbol,
-        acSymbol,
-        batterySymbol,
-        clockSymbol
-      },
-      { dark: "pacific", light: "pacific" }
-    );
-    Script.setWidget(widget);
-    // Script.complete();
+} catch (err) {
+  // swallow control-flow exception
+  if (!(err instanceof WidgetRendered)) {
+    throw err;
   }
-
-  // true offline, no cache
-  // const w = new ListWidget();
-  // w.backgroundColor = new Color("#1c1c1e");
-  //
-  // const t = w.addText("🏠 Home Assistant");
-  // t.font = Font.semiboldSystemFont(14);
-  // t.textColor = Color.white();
-  //
-  // w.addSpacer(6);
-  //
-  // const s = w.addText("System Offline");
-  // s.font = Font.boldSystemFont(16);
-  // s.textColor = new Color("#ff453a");
-  //
-  // Script.setWidget(w);
 }
-
-Script.complete();
