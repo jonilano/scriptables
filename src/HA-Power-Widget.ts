@@ -54,24 +54,12 @@ const Sensors = [
   "sensor.inverter_warning_code",
   "sensor.lxp_ba10300188_state_of_charge",
 
-  // core inverter roles
-  "binary_sensor.inverter_fault",
-  "binary_sensor.inverter_exporting_to_grid",
-
-  // primary sources
+  "binary_sensor.inverter_solar_powering_home",
   "binary_sensor.inverter_grid_powering_home",
   "binary_sensor.inverter_battery_powering_home",
-  "binary_sensor.inverter_solar_powering_home",
-
-  // assisting roles
-  "binary_sensor.inverter_grid_assisting",
-  "binary_sensor.inverter_solar_assisting",
-  "binary_sensor.inverter_battery_assisting",
-  "binary_sensor.inverter_grid_topping_up",
-
-  // charging states
-  "binary_sensor.inverter_pv_charging_battery",
-  "binary_sensor.inverter_grid_charging_battery"
+  "binary_sensor.inverter_solar_charging_battery",
+  "binary_sensor.inverter_grid_charging_battery",
+  "binary_sensor.inverter_exporting_to_grid"
 ];
 
 async function processData() {
@@ -136,24 +124,17 @@ async function exec() {
 
   const flags = {
     fault: sensorData["binary_sensor.inverter_fault"] === "on",
-
-    // primary sources
-    gridHome: sensorData["binary_sensor.inverter_grid_powering_home"] === "on",
     solarHome:
       sensorData["binary_sensor.inverter_solar_powering_home"] === "on",
+    gridHome: sensorData["binary_sensor.inverter_grid_powering_home"] === "on",
     battHome:
       sensorData["binary_sensor.inverter_battery_powering_home"] === "on",
 
-    // assisting roles
-    gridAssist: sensorData["binary_sensor.inverter_grid_assisting"] === "on",
-    solarAssist: sensorData["binary_sensor.inverter_solar_assisting"] === "on",
-    battAssist: sensorData["binary_sensor.inverter_battery_assisting"] === "on",
-
-    // charging + export
-    pvCharge: sensorData["binary_sensor.inverter_pv_charging_battery"] === "on",
-    gridTop: sensorData["binary_sensor.inverter_grid_topping_up"] === "on",
+    solarCharge:
+      sensorData["binary_sensor.inverter_solar_charging_battery"] === "on",
     gridCharge:
       sensorData["binary_sensor.inverter_grid_charging_battery"] === "on",
+
     exporting: sensorData["binary_sensor.inverter_exporting_to_grid"] === "on"
   };
 
@@ -162,21 +143,16 @@ async function exec() {
   if (flags.fault) {
     statusLines.push("🛑 Inverter Fault");
   } else {
-    // primary
-    if (flags.gridHome) statusLines.push("🌙 Grid Powering Home");
     if (flags.solarHome) statusLines.push("☀ Solar Powering Home");
+    if (flags.gridHome) statusLines.push("🔌 Grid Powering Home");
     if (flags.battHome) statusLines.push("🔋 Battery Powering Home");
 
-    // assisting
-    if (flags.gridAssist) statusLines.push("🔌 Grid Assisting");
-    if (flags.solarAssist) statusLines.push("🌞 Solar Assisting");
-    if (flags.battAssist) statusLines.push("🔋 Battery Assisting");
+    if (flags.solarCharge) statusLines.push("🔆 Solar Charging Battery");
+    if (flags.gridCharge) statusLines.push("⚡ Grid Charging Battery");
 
-    // charging + export
-    if (flags.pvCharge) statusLines.push("🔆 Solar Charging Battery");
-    if (flags.gridTop) statusLines.push("⚡ Grid Topping Up");
-    if (flags.gridCharge) statusLines.push("🔌 Rapid Charging");
-    if (flags.exporting) statusLines.push("🌞 Exporting to Grid");
+    if (flags.exporting) statusLines.push("📤 Exporting to Grid");
+
+    // if (statusLines.length === 0) statusLines.push("😴 Idle / No Power Flow");
   }
 
   if (statusLines.length === 0) statusLines.push("😴 Idle / No Power Flow");
@@ -220,7 +196,7 @@ async function exec() {
       chartData: chartDT,
       // subtitle1: `${sensorData["sensor.energy_consumption_today"]}kWh`,
       subtitle1: inverterStatusText,
-      subtitle2: `🕒 ${dateFormatter.string(new Date())}`,
+      subtitle2: `🟢 ${dateFormatter.string(new Date())}`,
       value: `${consumption}`,
       subValue: "W",
       headerSymbol: "bolt.fill",
@@ -304,8 +280,7 @@ try {
         chartData: cache.data.chartDT,
         subtitle1: cache.data.inverterStatusText.join("\n"),
         // subtitle2: `🕒 Cached ${ageMin} min ago`,
-        // subtitle2: `🕒 ${ageMin} (cached)`,
-        subtitle2: `🕒 ${dateFormatter.string(new Date(ageMin))} (cached)`,
+        subtitle2: `🟠 ${dateFormatter.string(new Date(ageMin))} (cached)`,
         value: `${cache.data.consumption}`,
         subValue: "W",
         headerSymbol: "bolt.fill",
